@@ -1,6 +1,5 @@
 # Inverse Physics-Informed Neural Network for Thermal Property Estimation
 
-**Author:** Mohammad  
 **Estimate unknown thermal diffusivity from sparse, noisy temperature measurements while enforcing the 2D transient heat equation.**
 
 This is my scientific machine-learning portfolio project. I defined the research idea, problem formulation, validation plan, and engineering requirements. The implementation was written with the help of an AI coding assistant, then reviewed, tested, and iterated by me.
@@ -53,7 +52,7 @@ The repository is self-contained: inverse PINNs, PDE-constrained optimization, a
 
 | Role | Contribution |
 | ---- | ------------ |
-| **Mohammad (author)** | Project idea, scientific scope, inverse-problem design, architecture choices, validation criteria, result interpretation, and final ownership of the work |
+| **Author** | Project idea, scientific scope, inverse-problem design, architecture choices, validation criteria, result interpretation, and final ownership of the work |
 | **AI coding assistant** | Helped implement and refactor code, tests, configs, and documentation under my direction |
 
 I remain responsible for the correctness, claims, and presentation of this project. AI assistance accelerated coding; it did not replace scientific judgment or project ownership.
