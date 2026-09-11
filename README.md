@@ -81,25 +81,25 @@ The result is a single PDE-constrained learning problem that reconstructs the fi
 
 ```mermaid
 flowchart TB
-  subgraph Data Generation
-    A[Finite-difference<br/>reference solver] --> B[Sparse sensor<br/>sampling]
-    B --> C[Optional Gaussian<br/>measurement noise]
+  subgraph DG["Data generation"]
+    A["Finite-difference reference solver"] --> B["Sparse sensor sampling"]
+    B --> C["Optional Gaussian measurement noise"]
   end
 
-  subgraph Inverse PINN
-    D[Collocation points<br/>interior / IC / BC] --> F[Composite loss]
+  subgraph IP["Inverse PINN"]
+    D["Collocation points: interior, IC, BC"] --> F["Composite loss"]
     C --> F
-    E[MLP Tθ(x,y,t)<br/>+ trainable α] --> F
-    F --> G[Adam warm-up]
-    G --> H[L-BFGS polish]
+    E["MLP temperature network + trainable alpha"] --> F
+    F --> G["Adam warm-up"]
+    G --> H["L-BFGS polish"]
   end
 
-  subgraph Evaluation
-    H --> I[Estimated α]
-    H --> J[Reconstructed T field]
-    I --> K[Parameter error<br/>& uncertainty]
-    J --> L[MAE / RMSE / relative L2<br/>vs reference]
-    M[Data-only baseline] --> L
+  subgraph EV["Evaluation"]
+    H --> I["Estimated alpha"]
+    H --> J["Reconstructed temperature field"]
+    I --> K["Parameter error and uncertainty"]
+    J --> L["MAE, RMSE, relative L2 vs reference"]
+    M["Data-only baseline"] --> L
   end
 ```
 
