@@ -1,0 +1,102 @@
+# Compact ablation config: shorter training for portfolio result tables.
+experiment:
+  name: smoke_ablation
+  seed: 7
+  output_dir: outputs
+  use_mlflow: false
+
+problem:
+  dimension: 2
+  transient: true
+
+geometry:
+  length_x: 1.0
+  length_y: 1.0
+  final_time: 1.0
+
+physics:
+  true_alpha: 0.05
+  heat_source: 0.0
+  conductivity: 1.0
+
+boundary:
+  type: dirichlet_homogeneous
+
+initial:
+  type: modal
+  value: 1.0
+
+scaling:
+  temperature_scale: 1.0
+  normalize_inputs: true
+
+inverse:
+  parameter: alpha
+  initial_guess: 0.08
+  transform: softplus
+
+network:
+  hidden_layers: [32, 32, 32]
+  activation: tanh
+  fourier_features: false
+  fourier_scale: 10.0
+  fourier_features_dim: 32
+  initialization: xavier
+
+sampling:
+  n_interior: 1200
+  n_boundary: 300
+  n_initial: 250
+  method: sobol
+
+sensors:
+  n_sensors: 9
+  n_time_samples: 15
+  placement: grid
+  random_seed: 7
+
+measurement:
+  noise_std: 0.0
+
+reference:
+  nx: 17
+  ny: 17
+  nt: 201
+  scheme: explicit
+
+training:
+  adam_epochs: 500
+  learning_rate: 0.002
+  lbfgs_enabled: true
+  lbfgs_max_iter: 50
+  batch_interior: null
+  scheduler: cosine
+  early_stopping_patience: 500
+  grad_clip: 1.0
+  checkpoint_every: 250
+  resume_from_checkpoint: null
+  print_every: 250
+  device: cpu
+
+loss:
+  lambda_pde: 1.0
+  lambda_bc: 10.0
+  lambda_ic: 10.0
+  lambda_data: 50.0
+  lambda_reg: 0.0
+
+adaptive:
+  enabled: false
+  refine_every: 500
+  n_new_points: 200
+  top_fraction: 0.2
+
+uncertainty:
+  method: ensemble
+  n_members: 2
+  enabled: false
+
+evaluation:
+  grid_nx: 17
+  grid_ny: 17
+  grid_nt: 11

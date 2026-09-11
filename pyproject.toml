@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inverse-pinn-thermal"
+version = "0.1.0"
+description = "Inverse Physics-Informed Neural Network for thermal diffusivity estimation from sparse noisy temperature measurements."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Scientific ML Portfolio" }]
+dependencies = [
+  "torch>=2.1",
+  "numpy>=1.24",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "pydantic>=2.5",
+  "pydantic-settings>=2.1",
+  "PyYAML>=6.0",
+  "pandas>=2.1",
+  "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+mlflow = ["mlflow>=2.9"]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+  "ruff>=0.3",
+  "mypy>=1.8",
+  "types-PyYAML>=6.0",
+  "types-tqdm>=4.66",
+]
+
+[project.scripts]
+ipt-generate-reference = "inverse_pinn_thermal.cli:generate_reference_main"
+ipt-generate-measurements = "inverse_pinn_thermal.cli:generate_measurements_main"
+ipt-train-inverse = "inverse_pinn_thermal.cli:train_inverse_main"
+ipt-train-baseline = "inverse_pinn_thermal.cli:train_baseline_main"
+ipt-evaluate = "inverse_pinn_thermal.cli:evaluate_main"
+ipt-run-ablation = "inverse_pinn_thermal.cli:run_ablation_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+markers = [
+  "slow: end-to-end training tests (deselect with '-m \"not slow\"')",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+warn_return_any = false
+warn_unused_ignores = true
+ignore_missing_imports = true
+check_untyped_defs = true
+packages = ["inverse_pinn_thermal"]
+mypy_path = "src"

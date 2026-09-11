@@ -1,0 +1,105 @@
+experiment:
+  name: inverse_alpha
+  seed: 42
+  output_dir: outputs
+  use_mlflow: false
+
+problem:
+  dimension: 2
+  transient: true
+
+geometry:
+  length_x: 1.0
+  length_y: 1.0
+  final_time: 100.0
+
+physics:
+  true_alpha: 1.0e-5
+  heat_source: 0.0
+  conductivity: 1.0  # known; used for Neumann/Robin BCs if enabled
+
+boundary:
+  type: dirichlet_homogeneous  # compatible with manufactured / modal IC
+  # alternatives: insulated_sides_dirichlet_bottom | convective_all
+
+initial:
+  type: modal  # T0 = sin(pi x / Lx) sin(pi y / Ly)
+  value: 1.0
+
+scaling:
+  # Non-dimensional: x*=x/Lx, y*=y/Ly, t*=t/t_final, T*=T/T_scale
+  # Heat equation becomes: dT*/dt* = alpha_nd * (d2T*/dx*^2 + (Lx/Ly)^2 d2T*/dy*^2)
+  # with alpha_nd = alpha * t_final / Lx^2
+  temperature_scale: 1.0
+  normalize_inputs: true
+
+inverse:
+  parameter: alpha
+  initial_guess: 2.0e-5
+  transform: softplus  # softplus | exp
+
+network:
+  hidden_layers: [64, 64, 64, 64]
+  activation: tanh
+  fourier_features: false
+  fourier_scale: 10.0
+  fourier_features_dim: 64
+  initialization: xavier
+
+sampling:
+  n_interior: 8000
+  n_boundary: 2000
+  n_initial: 1500
+  method: sobol  # uniform | lhs | sobol
+
+sensors:
+  n_sensors: 12
+  n_time_samples: 40
+  placement: grid  # grid | random
+  random_seed: 42
+
+measurement:
+  noise_std: 0.0
+
+reference:
+  nx: 41
+  ny: 41
+  nt: 201
+  scheme: explicit  # verified against manufactured solution for CFL-stable cases
+
+training:
+  adam_epochs: 5000
+  learning_rate: 0.001
+  lbfgs_enabled: true
+  lbfgs_max_iter: 500
+  batch_interior: null  # null => full batch
+  scheduler: cosine
+  early_stopping_patience: 1500
+  grad_clip: 1.0
+  checkpoint_every: 500
+  resume_from_checkpoint: null
+  print_every: 200
+  device: cpu
+
+loss:
+  lambda_pde: 1.0
+  lambda_bc: 10.0
+  lambda_ic: 10.0
+  lambda_data: 100.0
+  lambda_reg: 0.0
+
+adaptive:
+  enabled: false
+  refine_every: 1000
+  n_new_points: 500
+  top_fraction: 0.2
+
+uncertainty:
+  method: ensemble  # ensemble | bootstrap
+  n_members: 3
+  enabled: false
+
+evaluation:
+  grid_nx: 41
+  grid_ny: 41
+  grid_nt: 21
