@@ -1,8 +1,11 @@
 # Inverse Physics-Informed Neural Network for Thermal Property Estimation
 
+**Author:** Mohammad  
 **Estimate unknown thermal diffusivity from sparse, noisy temperature measurements while enforcing the 2D transient heat equation.**
 
-This repository is a self-contained scientific machine-learning portfolio project. It demonstrates inverse PINNs, PDE-constrained optimization, automatic differentiation, synthetic sensor design, uncertainty estimation, baseline comparison, and reproducible Python engineering — without depending on external experimental datasets.
+This is my scientific machine-learning portfolio project. I defined the research idea, problem formulation, validation plan, and engineering requirements. The implementation was written with the help of an AI coding assistant, then reviewed, tested, and iterated by me.
+
+The repository is self-contained: inverse PINNs, PDE-constrained optimization, automatic differentiation, synthetic sensor design, uncertainty estimation, baseline comparison, and reproducible Python packaging — without depending on external experimental datasets.
 
 | Aspect | Version 1 choice |
 | ------ | ---------------- |
@@ -17,35 +20,47 @@ This repository is a self-contained scientific machine-learning portfolio projec
 
 ## Table of contents
 
-1. [Scientific motivation](#1-scientific-motivation)
-2. [Inverse PINN concept](#2-inverse-pinn-concept)
-3. [Governing heat equation](#3-governing-heat-equation)
-4. [Physical parameters & identifiability](#4-physical-parameters--identifiability)
-5. [Benchmark problem setup](#5-benchmark-problem-setup)
-6. [Synthetic reference & sensors](#6-synthetic-reference--sensors)
-7. [Network architecture](#7-network-architecture)
-8. [Inverse parameter learning](#8-inverse-parameter-learning)
-9. [Loss formulation](#9-loss-formulation)
-10. [Scaling & non-dimensionalization](#10-scaling--non-dimensionalization)
-11. [Training strategy](#11-training-strategy)
-12. [Evaluation metrics](#12-evaluation-metrics)
-13. [Baseline & ablation study](#13-baseline--ablation-study)
-14. [Uncertainty estimation](#14-uncertainty-estimation)
-15. [Results](#15-results)
-16. [Project structure](#16-project-structure)
-17. [Installation](#17-installation)
-18. [Configuration](#18-configuration)
-19. [Exact run commands](#19-exact-run-commands)
-20. [Outputs & artifacts](#20-outputs--artifacts)
-21. [Testing & quality](#21-testing--quality)
-22. [Reproducibility](#22-reproducibility)
-23. [Limitations](#23-limitations)
-24. [Next improvements](#24-next-improvements)
-25. [License](#25-license)
+1. [Authorship & AI assistance](#1-authorship--ai-assistance)
+2. [Scientific motivation](#2-scientific-motivation)
+3. [Inverse PINN concept](#3-inverse-pinn-concept)
+4. [Governing heat equation](#4-governing-heat-equation)
+5. [Physical parameters & identifiability](#5-physical-parameters--identifiability)
+6. [Benchmark problem setup](#6-benchmark-problem-setup)
+7. [Synthetic reference & sensors](#7-synthetic-reference--sensors)
+8. [Network architecture](#8-network-architecture)
+9. [Inverse parameter learning](#9-inverse-parameter-learning)
+10. [Loss formulation](#10-loss-formulation)
+11. [Scaling & non-dimensionalization](#11-scaling--non-dimensionalization)
+12. [Training strategy](#12-training-strategy)
+13. [Evaluation metrics](#13-evaluation-metrics)
+14. [Baseline & ablation study](#14-baseline--ablation-study)
+15. [Uncertainty estimation](#15-uncertainty-estimation)
+16. [Results](#16-results)
+17. [Project structure](#17-project-structure)
+18. [Installation](#18-installation)
+19. [Configuration](#19-configuration)
+20. [Exact run commands](#20-exact-run-commands)
+21. [Outputs & artifacts](#21-outputs--artifacts)
+22. [Testing & quality](#22-testing--quality)
+23. [Reproducibility](#23-reproducibility)
+24. [Limitations](#24-limitations)
+25. [Next improvements](#25-next-improvements)
+26. [License](#26-license)
 
 ---
 
-## 1. Scientific motivation
+## 1. Authorship & AI assistance
+
+| Role | Contribution |
+| ---- | ------------ |
+| **Mohammad (author)** | Project idea, scientific scope, inverse-problem design, architecture choices, validation criteria, result interpretation, and final ownership of the work |
+| **AI coding assistant** | Helped implement and refactor code, tests, configs, and documentation under my direction |
+
+I remain responsible for the correctness, claims, and presentation of this project. AI assistance accelerated coding; it did not replace scientific judgment or project ownership.
+
+---
+
+## 2. Scientific motivation
 
 Thermal properties of solids — diffusivity, conductivity, convection coefficients — are often **not measured directly**. Instead they are inferred from temperature histories recorded by a limited number of sensors. This is a classic **inverse heat-conduction problem**:
 
@@ -63,7 +78,7 @@ The result is a single PDE-constrained learning problem that reconstructs the fi
 
 ---
 
-## 2. Inverse PINN concept
+## 3. Inverse PINN concept
 
 ```mermaid
 flowchart TB
@@ -109,7 +124,7 @@ The reference FD solution is used **only** to generate measurements and to valid
 
 ---
 
-## 3. Governing heat equation
+## 4. Governing heat equation
 
 ### Physical form
 
@@ -153,7 +168,7 @@ satisfies the heat equation exactly. This manufactured solution is used to:
 
 ---
 
-## 4. Physical parameters & identifiability
+## 5. Physical parameters & identifiability
 
 | Symbol | Name | Version 1 role |
 | ------ | ---- | -------------- |
@@ -178,7 +193,7 @@ as the primary identifiable benchmark. See `src/inverse_pinn_thermal/inverse/ide
 
 ---
 
-## 5. Benchmark problem setup
+## 6. Benchmark problem setup
 
 ### Geometry & time
 
@@ -215,7 +230,7 @@ Alternative config options:
 
 ---
 
-## 6. Synthetic reference & sensors
+## 7. Synthetic reference & sensors
 
 ### Reference solver
 
@@ -246,7 +261,7 @@ x,y,t,temperature_clean,temperature
 
 ---
 
-## 7. Network architecture
+## 8. Network architecture
 
 ### Temperature network \(T_\theta\)
 
@@ -278,7 +293,7 @@ Same MLP architecture, trained with **measurement loss only** (no PDE / IC / BC 
 
 ---
 
-## 8. Inverse parameter learning
+## 9. Inverse parameter learning
 
 Unknown diffusivity is a trainable `nn.Parameter` with a positivity transform:
 
@@ -302,7 +317,7 @@ Initial guesses are configurable (e.g. \(5\times10^{-6}\), \(2\times10^{-5}\), \
 
 ---
 
-## 9. Loss formulation
+## 10. Loss formulation
 
 \[
 \mathcal{L}
@@ -345,7 +360,7 @@ Optional **residual-based adaptive refinement**: after training epochs, high-res
 
 ---
 
-## 10. Scaling & non-dimensionalization
+## 11. Scaling & non-dimensionalization
 
 Unscaled thermal problems with \(\alpha \sim 10^{-5}\) and \(t_f \sim 10^2\) create severe optimizer imbalance. This project normalizes:
 
@@ -373,7 +388,7 @@ where \(\gamma = (L_x/L_y)^2\) and \(\alpha_{\mathrm{nd}} = \alpha\, t_f / L_x^2
 
 ---
 
-## 11. Training strategy
+## 12. Training strategy
 
 ### Two-stage optimization
 
@@ -400,7 +415,7 @@ Tracked during training:
 
 ---
 
-## 12. Evaluation metrics
+## 13. Evaluation metrics
 
 ### Temperature field (vs FD reference)
 
@@ -436,7 +451,7 @@ Generated under `outputs/<run>/figures/`:
 
 ---
 
-## 13. Baseline & ablation study
+## 14. Baseline & ablation study
 
 `scripts/run_ablation.py` runs:
 
@@ -452,7 +467,7 @@ Optional `--uncertainty` flag runs ensemble or bootstrap estimation of \(\alpha\
 
 ---
 
-## 14. Uncertainty estimation
+## 15. Uncertainty estimation
 
 Practical empirical options (not Bayesian posteriors):
 
@@ -472,11 +487,11 @@ note: empirical uncertainty from independently trained models;
 
 ---
 
-## 15. Results
+## 16. Results
 
 > All numbers below were produced by actual local runs. They are not fabricated.
 
-### 15.1 Primary smoke inverse run
+### 16.1 Primary smoke inverse run
 
 Config: `configs/smoke.yaml`  
 Artifacts: `outputs/smoke/`
@@ -498,7 +513,7 @@ Artifacts: `outputs/smoke/`
 
 **Takeaway:** from a deliberately wrong initial guess (\(0.08\)), the inverse PINN recovered diffusivity within ~7% and reconstructed the temperature field to ~4.5% relative \(L^2\).
 
-### 15.2 Ablation study (shorter budget)
+### 16.2 Ablation study (shorter budget)
 
 Config: `configs/smoke_ablation.yaml` (500 Adam epochs)  
 Artifacts: `outputs/smoke_ablation_ablation/`
@@ -518,13 +533,13 @@ Artifacts: `outputs/smoke_ablation_ablation/`
 3. **Parameter recovery needs adequate optimization budget.** The longer smoke run reaches ~7% α error; the short ablation still shows beneficial physics for the field even when α is only partially converged.
 4. **More sensors ≠ automatically better α** under a fixed short budget — optimization dynamics matter as much as data volume.
 
-### 15.3 Full physical-\(\alpha\) benchmark
+### 16.3 Full physical-\(\alpha\) benchmark
 
 Use `configs/inverse_alpha.yaml` / `configs/noisy_inverse.yaml` (\(\alpha_{\mathrm{true}}=10^{-5}\)) for longer portfolio runs. Those configs are ready; fill additional result rows only after executing them.
 
 ---
 
-## 16. Project structure
+## 17. Project structure
 
 ```text
 .
@@ -586,7 +601,7 @@ Use `configs/inverse_alpha.yaml` / `configs/noisy_inverse.yaml` (\(\alpha_{\math
 
 ---
 
-## 17. Installation
+## 18. Installation
 
 **Requirements:** Python **≥ 3.11**, pip.
 
@@ -615,7 +630,7 @@ Dev dependencies: `pytest`, `ruff`, `mypy`.
 
 ---
 
-## 18. Configuration
+## 19. Configuration
 
 Experiments are fully driven by YAML. Example excerpt from `configs/inverse_alpha.yaml`:
 
@@ -681,7 +696,7 @@ Configs are validated with **Pydantic** on load (`load_config`).
 
 ---
 
-## 19. Exact run commands
+## 20. Exact run commands
 
 ### A. Fast end-to-end smoke (recommended first)
 
@@ -740,7 +755,7 @@ ipt-run-ablation --config configs/smoke_ablation.yaml
 
 ---
 
-## 20. Outputs & artifacts
+## 21. Outputs & artifacts
 
 Each run directory (e.g. `outputs/smoke/`) typically contains:
 
@@ -759,7 +774,7 @@ Checkpoint payload includes: network weights, learned thermal parameters, optimi
 
 ---
 
-## 21. Testing & quality
+## 22. Testing & quality
 
 | Suite | What it verifies |
 | ----- | ---------------- |
@@ -784,7 +799,7 @@ mypy src/inverse_pinn_thermal
 
 ---
 
-## 22. Reproducibility
+## 23. Reproducibility
 
 - Fixed `experiment.seed` for NumPy / PyTorch
 - Seeded Sobol / LHS / uniform collocation
@@ -796,7 +811,7 @@ mypy src/inverse_pinn_thermal
 
 ---
 
-## 23. Limitations
+## 24. Limitations
 
 1. **FD reference BC scope:** explicit solver currently supports homogeneous Dirichlet for generation/validation.
 2. **Single-parameter focus:** joint \((\alpha,k,h)\) estimation is intentionally deferred due to identifiability.
@@ -807,7 +822,7 @@ mypy src/inverse_pinn_thermal
 
 ---
 
-## 24. Next improvements
+## 25. Next improvements
 
 1. Run full `inverse_alpha.yaml` / `noisy_inverse.yaml` trainings for portfolio-grade physical-\(\alpha\) tables.
 2. Add Crank–Nicolson / implicit FD and Neumann–Robin reference cases.
@@ -819,14 +834,12 @@ mypy src/inverse_pinn_thermal
 
 ---
 
-## 25. License
+## 26. License
 
 MIT
 
 ---
 
-### Citation / portfolio blurb
+### Portfolio blurb
 
-If you use this project as a portfolio piece, a short description:
-
-> Built an inverse Physics-Informed Neural Network that estimates thermal diffusivity from sparse noisy temperature sensors while enforcing the 2D transient heat equation via automatic differentiation. Included a validated finite-difference reference solver, data-only baseline, ablation study, empirical uncertainty estimation, and a reproducible Python package with tests.
+> I designed an inverse Physics-Informed Neural Network project to estimate thermal diffusivity from sparse, noisy temperature sensors while enforcing the 2D transient heat equation. I defined the scientific problem, validation strategy, and experiments; the code was implemented with the help of an AI coding assistant under my direction. The repository includes a validated finite-difference reference solver, a data-only baseline, ablation studies, empirical uncertainty estimation, and a reproducible Python package with tests.
